@@ -99,11 +99,12 @@ Los contadores de la animación no son la cota teórica sino operaciones reales:
 
 ## Qué aprendí
 
-<!-- TODO: redactar a mano -->
-- 
-- 
-- 
-<!-- /TODO -->
+- **La notación O() es una cota, no una medida.** Al contar operaciones reales sobre entradas distintas vi que el mismo algoritmo cambia mucho según los datos: Burbuja e Inserción casi no trabajan con una entrada casi ordenada y se disparan con una inversa, mientras que Selección hace siempre las mismas comparaciones.
+- **Elegir bien el pivote importa tanto como el algoritmo.** QuickSort con un pivote ingenuo se vuelve cuadrático con entradas ordenadas o inversas; la mediana de tres lo evita en esos casos, y los tests lo comprueban.
+- **La estabilidad es una propiedad que se puede demostrar con contraejemplos.** No me bastó con leer qué algoritmos son estables: escribí tests que conservan el orden de los empates y otros que encuentran un caso en el que Selección y QuickSort lo rompen.
+- **Separar la lógica de la interfaz hace todo más fácil.** Al devolver cada algoritmo una lista de pasos, la lógica se prueba con Node sin abrir el navegador, la animación solo reproduce pasos y avanzar o retroceder paso a paso sale casi gratis.
+- **Comparar contra una referencia detecta errores que no se ven a ojo.** Probar cada algoritmo contra `Array.prototype.sort` con casos límite (vacío, un elemento, repetidos) y semilla fija hace los fallos reproducibles.
+- **La accesibilidad se diseña desde el principio.** Control por teclado, descripciones con `aria-live` y respeto a "reducir movimiento" cambian cómo se estructura la animación, no son un añadido final.
 
 ## Posibles mejoras
 
