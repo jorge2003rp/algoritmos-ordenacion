@@ -1,0 +1,10 @@
+{
+  "name": "algoritmos-ordenacion",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Visualizador de algoritmos de ordenación: Burbuja, Selección, Inserción, MergeSort y QuickSort (HTML, CSS y JavaScript, sin librerías externas).",
+  "scripts": {
+    "test": "node --test"
+  },
+  "license": "MIT"
+}

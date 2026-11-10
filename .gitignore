@@ -1,0 +1,19 @@
+# Material de la asignatura (solo como referencia, no se publica)
+referencia/
+
+# Dependencias y salidas
+node_modules/
+
+# Editores y sistema
+.vscode/
+.idea/
+.claude/
+.DS_Store
+Thumbs.db
+
+# Restos de proyectos Eclipse / Java
+*.class
+bin/
+.project
+.classpath
+.settings/

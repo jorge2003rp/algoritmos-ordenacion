@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Visualizador de algoritmos de ordenación</title>
+  <meta name="description" content="Mira paso a paso cómo ordenan Burbuja, Selección, Inserción, MergeSort y QuickSort, cuenta sus comparaciones e intercambios y compáralos sobre la misma entrada.">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Visualizador de algoritmos de ordenación">
+  <meta property="og:description" content="Burbuja, Selección, Inserción, MergeSort y QuickSort paso a paso, con contadores y modo comparación.">
+  <meta property="og:image" content="https://jorge2003rp.github.io/algoritmos-ordenacion/assets/preview.png">
+  <meta property="og:url" content="https://jorge2003rp.github.io/algoritmos-ordenacion/">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <header class="hero">
+      <p class="eyebrow">Algoritmos · Ordenación · JavaScript</p>
+      <h1>Algoritmos de ordenación</h1>
+      <p class="lead">Mira cómo se ordena un array barra a barra: qué se <strong>compara</strong>, qué se <strong>intercambia</strong> y cuánto trabajo cuesta cada algoritmo. Activa la <strong>comparación</strong> para enfrentar dos sobre la misma entrada.</p>
+      <a class="repo-link" href="https://github.com/jorge2003rp/algoritmos-ordenacion">Ver el código en GitHub</a>
+    </header>
+
+    <section class="card controls" aria-label="Controles">
+      <div class="toolbar">
+        <div class="field">
+          <label for="alg-a">Algoritmo</label>
+          <select id="alg-a"></select>
+        </div>
+        <div class="field" id="campo-b" hidden>
+          <label for="alg-b">Comparar con</label>
+          <select id="alg-b"></select>
+        </div>
+        <div class="field check">
+          <label for="comparar"><input type="checkbox" id="comparar"> Modo comparación</label>
+        </div>
+        <div class="field">
+          <label for="tipo">Entrada</label>
+          <select id="tipo"></select>
+        </div>
+        <div class="field size">
+          <label for="tam">Tamaño <output id="tam-out" for="tam">40</output></label>
+          <input id="tam" type="range" min="5" max="150" step="1" value="40">
+        </div>
+        <button type="button" id="nueva">Nueva entrada</button>
+      </div>
+
+      <div class="toolbar">
+        <div class="group" role="group" aria-label="Animación">
+          <button type="button" id="reiniciar">Reiniciar</button>
+          <button type="button" id="atras" aria-keyshortcuts="ArrowLeft">&larr; Paso</button>
+          <button type="button" id="play" class="primary" aria-keyshortcuts="Space">Reproducir</button>
+          <button type="button" id="adelante" aria-keyshortcuts="ArrowRight">Paso &rarr;</button>
+        </div>
+        <div class="field speed">
+          <label for="vel">Velocidad <output id="vel-out" for="vel">25 pasos/s</output></label>
+          <input id="vel" type="range" min="0" max="7" step="1" value="3">
+        </div>
+        <p class="semilla">Semilla: <output id="semilla" class="mono"></output></p>
+      </div>
+    </section>
+
+    <div id="paneles" class="paneles"></div>
+
+    <p id="resumen" class="resumen" hidden></p>
+
+    <ul class="legend" aria-label="Leyenda de colores">
+      <li><i class="sw base"></i>Sin tocar</li>
+      <li><i class="sw comparar"></i>Comparando</li>
+      <li><i class="sw intercambiar"></i>Intercambiando</li>
+      <li><i class="sw escribir"></i>Escribiendo (MergeSort)</li>
+      <li><i class="sw pivote"></i>Pivote (QuickSort)</li>
+      <li><i class="sw fijo"></i>En su posición final</li>
+    </ul>
+
+    <p class="hint">Teclado: <kbd>Espacio</kbd> reproducir/pausar · <kbd>←</kbd> <kbd>→</kbd> paso atrás/adelante · <kbd>↑</kbd> <kbd>↓</kbd> velocidad · <kbd>N</kbd> nueva entrada · <kbd>R</kbd> reiniciar · <kbd>C</kbd> modo comparación · <kbd>1</kbd>–<kbd>5</kbd> elegir algoritmo.</p>
+
+    <section class="card" aria-labelledby="tabla-titulo">
+      <h2 id="tabla-titulo">Complejidad de un vistazo</h2>
+      <div class="tabla-scroll">
+        <table id="tabla-complejidad">
+          <thead>
+            <tr>
+              <th scope="col">Algoritmo</th>
+              <th scope="col">Mejor caso</th>
+              <th scope="col">Caso medio</th>
+              <th scope="col">Peor caso</th>
+              <th scope="col">Memoria extra</th>
+              <th scope="col">Estable</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="hint">Un algoritmo es <strong>estable</strong> si los elementos iguales conservan su orden relativo. Los contadores de la animación cuentan operaciones reales sobre la entrada elegida, no la cota teórica.</p>
+    </section>
+
+    <footer>
+      <p>Hecho con HTML, CSS y JavaScript, sin librerías. Licencia MIT.</p>
+    </footer>
+  </main>
+
+  <!-- Región accesible: anuncia lo que ocurre al pausar, avanzar paso a paso o terminar -->
+  <div id="anuncio" class="sr-only" role="status" aria-live="polite"></div>
+
+  <template id="tpl-panel">
+    <section class="panel card">
+      <h2 class="panel-titulo"></h2>
+      <canvas role="img" aria-label=""></canvas>
+      <div class="progreso" aria-hidden="true"><div class="barra"></div></div>
+      <p class="estado"></p>
+      <dl class="contadores">
+        <div><dt>Comparaciones</dt><dd data-c="comparaciones">0</dd></div>
+        <div><dt>Intercambios</dt><dd data-c="intercambios">0</dd></div>
+        <div><dt>Escrituras</dt><dd data-c="escrituras">0</dd></div>
+        <div><dt>Progreso</dt><dd data-c="progreso">0 / 0</dd></div>
+      </dl>
+      <p class="descripcion"></p>
+      <dl class="complejidad">
+        <div><dt>Mejor</dt><dd data-k="mejor"></dd></div>
+        <div><dt>Medio</dt><dd data-k="medio"></dd></div>
+        <div><dt>Peor</dt><dd data-k="peor"></dd></div>
+        <div><dt>Memoria</dt><dd data-k="memoria"></dd></div>
+        <div><dt>Estable</dt><dd data-k="estable"></dd></div>
+      </dl>
+    </section>
+  </template>
+
+  <script src="sorting.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
